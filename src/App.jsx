@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
+
 /* =========================================================================
    📷 메인 커버 사진 (base64 임베드)
    교체 시 이 상수만 새 data URL로 갈아끼우면 됩니다.
@@ -1576,6 +1577,114 @@ function Footer() {
   );
 }
 
+function IntroOverlay() {
+  const [visible, setVisible] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    document.body.style.overflow = "hidden";
+
+    const fontLink = document.createElement("link");
+fontLink.rel = "stylesheet";
+fontLink.href =
+  "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap";
+document.head.appendChild(fontLink);
+
+    const fadeTimer = setTimeout(() => setFadeOut(true), 2000);
+
+    const removeTimer = setTimeout(() => {
+      setVisible(false);
+      document.body.style.overflow = "";
+
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 0);
+    }, 2900);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "rgba(20, 16, 12, 0.82)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: fadeOut ? 0 : 1,
+        transition: "opacity 900ms ease",
+        pointerEvents: "none",
+      }}
+    >
+      <div className="intro-script">
+        We're getting married
+      </div>
+
+      <style>{`
+  .intro-script {
+    position: relative;
+    font-family: 'Great Vibes', cursive;
+    font-size: 42px;
+    color: #f7f3ec;
+    white-space: nowrap;
+    overflow: hidden;
+
+    width: 0;
+    opacity: 0;
+
+    animation:
+      scriptWrite 1800ms ease forwards,
+      scriptFade 600ms ease 200ms forwards;
+  }
+
+  .intro-script::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 10%;
+    width: 1px;
+    height: 80%;
+    background: rgba(247, 243, 236, 0.7);
+    animation: penBlink 500ms infinite;
+  }
+
+  @keyframes scriptWrite {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 300px;
+    }
+  }
+
+  @keyframes scriptFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes penBlink {
+    0%,100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+`}</style>
+    </div>
+  );
+}
 /* =========================================================================
    루트
    ========================================================================= */
@@ -1601,6 +1710,9 @@ export default function WeddingInvitation() {
         fontFamily: fontBody,
       }}
     >
+      <IntroOverlay />
+
+
       <div
         style={{
           maxWidth: 420,
