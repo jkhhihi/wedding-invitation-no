@@ -1610,10 +1610,12 @@ function IntroOverlay() {
         // 음악 시작 시도
         const audio = document.getElementById("wedding-bgm");
         if (audio) {
-          audio.volume = 0.45;
-          audio.play().catch(() => {
-            // 모바일/카톡에서는 자동재생이 막힐 수 있음
-          });
+          audio.volume = 0;
+audio.play()
+  .then(() => {
+    fadeInAudio(audio, 0.45, 1800);
+  })
+  .catch(() => {});
         }
 
         // 첫 화면 자연스럽게 등장
@@ -1731,6 +1733,133 @@ function IntroOverlay() {
     </div>
   );
 }
+
+function fadeInAudio(audio, targetVolume = 0.45, duration = 1800) {
+  if (!audio) return;
+
+  audio.volume = 0;
+  const steps = 30;
+  const stepTime = duration / steps;
+  const volumeStep = targetVolume / steps;
+  let currentStep = 0;
+
+  const timer = setInterval(() => {
+    currentStep += 1;
+    audio.volume = Math.min(targetVolume, volumeStep * currentStep);
+
+    if (currentStep >= steps) {
+      clearInterval(timer);
+    }
+  }, stepTime);
+}
+
+function MusicButton() {
+  const [playing, setPlaying] = useState(false);
+
+  // 🔊 페이드 인 함수
+  const fadeInAudio = (audio, target = 0.45, duration = 1200) => {
+    audio.volume = 0;
+    const steps = 20;
+    const stepTime = duration / steps;
+    const stepVolume = target / steps;
+    let current = 0;
+
+    const timer = setInterval(() => {
+      current++;
+      audio.volume = Math.min(target, stepVolume * current);
+      if (current >= steps) clearInterval(timer);
+    }, stepTime);
+  };
+
+  // ▶ / ⏸ 토글
+  const toggleMusic = () => {
+    const audio = document.getElementById("wedding-bgm");
+    if (!audio) return;
+
+    if (audio.paused) {
+      audio.play()
+        .then(() => {
+          fadeInAudio(audio, 0.45, 1200);
+          setPlaying(true);
+        })
+        .catch(() => {});
+    } else {
+      audio.pause();
+      setPlaying(false);
+    }
+  };
+
+  // 👉 첫 클릭 시 자동 시작 (모바일 대응)
+  useEffect(() => {
+    const handleFirstTouch = () => {
+      const audio = document.getElementById("wedding-bgm");
+      if (!audio) return;
+
+      if (audio.paused) {
+        audio.play()
+          .then(() => {
+            fadeInAudio(audio, 0.45, 1200);
+            setPlaying(true);
+          })
+          .catch(() => {});
+      }
+
+      window.removeEventListener("click", handleFirstTouch);
+    };
+
+    window.addEventListener("click", handleFirstTouch);
+
+    return () => {
+      window.removeEventListener("click", handleFirstTouch);
+    };
+  }, []);
+
+  return (
+    <button
+      onClick={toggleMusic}
+      style={{
+        position: "fixed",
+        top: 26,
+        right: "calc(50% - 190px)",
+        zIndex: 9998,
+        width: 48,
+        height: 48,
+        borderRadius: "50%",
+        border: "1px solid rgba(0,0,0,0.08)",
+        background: "rgba(255,255,255,0.92)",
+        color: "#222",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+        backdropFilter: "blur(6px)",
+      }}
+    >
+      {playing ? (
+        // ⏸ 아이콘
+        <div style={{ display: "flex", gap: 4 }}>
+          <div style={{ width: 4, height: 16, background: "#222" }} />
+          <div style={{ width: 4, height: 16, background: "#222" }} />
+        </div>
+      ) : (
+        // ▶ 아이콘
+        <div
+          style={{
+            width: 0,
+            height: 0,
+            borderLeft: "12px solid #222",
+            borderTop: "8px solid transparent",
+            borderBottom: "8px solid transparent",
+            marginLeft: 3,
+          }}
+        />
+      )}
+    </button>
+  );
+}
+
+
 /* =========================================================================
    루트
    ========================================================================= */
@@ -1759,6 +1888,7 @@ export default function WeddingInvitation() {
       <IntroOverlay />
 
       <audio id="wedding-bgm" src="/audio/music.mp3" loop />
+      <MusicButton />
 
       <div
         id="wedding-card"
