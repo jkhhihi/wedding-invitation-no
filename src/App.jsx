@@ -62,11 +62,17 @@ const data = {
   // 신랑/신부 정보
   groom: {
     name: "정기훈",
+    firstName: "기훈",
     phone: "01093559129",
+    father: "정원섭",
+    mother: "서명순",
   },
   bride: {
     name: "남연지",
+    firstName: "연지",
     phone: "01097761703",
+    father: "남효병",
+    mother: "양정선",
   },
 
   // 갤러리 (실제 사진 URL로 교체)
@@ -122,8 +128,8 @@ const data = {
     ],
     bride: [
       { role: "신부", bank: "신한은행", owner: "남연지", number: "110-266-276520" },
-      { role: "신부 아버지", bank: "iM뱅크 (대구)", owner: "남효병", number: "074-08-036051-4" },
-      { role: "신부 어머니", bank: "iM뱅크 (대구)", owner: "양정선", number: "164-13-128628" },
+      { role: "신부 아버지", bank: "iM뱅크", owner: "남효병", number: "074-08-036051-4" },
+      { role: "신부 어머니", bank: "iM뱅크", owner: "양정선", number: "164-13-128628" },
     ],
   },
 };
@@ -511,8 +517,90 @@ function Greeting() {
             <div key={i}>{line}</div>
           ))}
         </div>
+
+        {/* 혼주 — 부모 + 자녀 표기 */}
+        <div
+          style={{
+            marginTop: 36,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            alignItems: "center",
+            fontFamily: fontDisplay,
+            fontSize: 14,
+            color: palette.ink,
+            letterSpacing: "0.02em",
+          }}
+        >
+          <ParentRow
+            father={data.groom.father}
+            mother={data.groom.mother}
+            relation="아들"
+            child={data.groom.firstName}
+          />
+          <ParentRow
+            father={data.bride.father}
+            mother={data.bride.mother}
+            relation="딸"
+            child={data.bride.firstName}
+          />
+        </div>
       </Reveal>
     </section>
+  );
+}
+
+function ParentRow({ father, mother, relation, child }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+      }}
+    >
+      {/* 부모 두 줄 — 고정 너비, 오른쪽 정렬 */}
+      <div
+        style={{
+          textAlign: "right",
+          lineHeight: 1.5,
+          fontSize: 13,
+          width: 56,
+        }}
+      >
+        <div>{father}</div>
+        <div>{mother}</div>
+      </div>
+
+      {/* 의 */}
+      <div style={{ fontSize: 12, color: palette.inkSoft }}>의</div>
+
+      {/* 관계 (아들/딸) — 고정 너비로 통일 */}
+      <div
+        style={{
+          fontSize: 13,
+          color: palette.inkSoft,
+          width: 24,
+          textAlign: "center",
+        }}
+      >
+        {relation}
+      </div>
+
+      {/* 자녀 이름 — 왼쪽 정렬 */}
+      <div
+        style={{
+          fontSize: 17,
+          color: palette.ink,
+          letterSpacing: "0.05em",
+          fontWeight: 500,
+          width: 48,
+          textAlign: "left",
+        }}
+      >
+        {child}
+      </div>
+    </div>
   );
 }
 
