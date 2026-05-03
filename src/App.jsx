@@ -1589,12 +1589,14 @@ function IntroOverlay() {
     document.body.style.overflow = "hidden";
 
     const fontLink = document.createElement("link");
-fontLink.rel = "stylesheet";
-fontLink.href =
-  "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap";
-document.head.appendChild(fontLink);
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap";
+    document.head.appendChild(fontLink);
 
-    const fadeTimer = setTimeout(() => setFadeOut(true), 2000);
+    const fadeTimer = setTimeout(() => {
+      setFadeOut(true);
+    }, 3000);
 
     const removeTimer = setTimeout(() => {
       setVisible(false);
@@ -1604,13 +1606,31 @@ document.head.appendChild(fontLink);
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
+
+        // 음악 시작 시도
+        const audio = document.getElementById("wedding-bgm");
+        if (audio) {
+          audio.volume = 0.45;
+          audio.play().catch(() => {
+            // 모바일/카톡에서는 자동재생이 막힐 수 있음
+          });
+        }
+
+        // 첫 화면 자연스럽게 등장
+        const card = document.getElementById("wedding-card");
+        if (card) {
+          card.classList.add("wedding-card-enter");
+        }
       }, 0);
-    }, 2900);
+    }, 3900);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(removeTimer);
       document.body.style.overflow = "";
+      try {
+        document.head.removeChild(fontLink);
+      } catch (e) {}
     };
   }, []);
 
@@ -1622,66 +1642,92 @@ document.head.appendChild(fontLink);
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(20, 16, 12, 0.82)",
+        background: fadeOut
+          ? "rgba(20, 16, 12, 0)"
+          : "rgba(20, 16, 12, 0.82)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         opacity: fadeOut ? 0 : 1,
-        transition: "opacity 900ms ease",
+        transition: "opacity 900ms ease, background 900ms ease",
         pointerEvents: "none",
       }}
     >
       <div className="intro-script">
-        We're getting married
+        <div>We're</div>
+        <div>getting</div>
+        <div>married</div>
       </div>
 
       <style>{`
-  .intro-script {
-    position: relative;
-    font-family: 'Great Vibes', cursive;
-    font-size: 42px;
-    color: #f7f3ec;
-    white-space: nowrap;
-    overflow: hidden;
+        .intro-script {
+          font-family: 'Great Vibes', cursive;
+          font-size: 56px;
+          line-height: 1.05;
+          color: #f7f3ec;
+          text-align: center;
+          white-space: nowrap;
+          animation: introScale 2600ms ease forwards;
+        }
 
-    width: 0;
-    opacity: 0;
+        .intro-script div {
+          opacity: 0;
+          transform: translateY(18px);
+          filter: blur(6px);
+          animation: introLineReveal 1000ms ease forwards;
+        }
 
-    animation:
-      scriptWrite 1800ms ease forwards,
-      scriptFade 600ms ease 200ms forwards;
-  }
+        .intro-script div:nth-child(1) {
+          animation-delay: 0ms;
+        }
 
-  .intro-script::after {
-    content: "";
-    position: absolute;
-    right: -6px;
-    top: 10%;
-    width: 1px;
-    height: 80%;
-    background: rgba(247, 243, 236, 0.7);
-    animation: penBlink 500ms infinite;
-  }
+        .intro-script div:nth-child(2) {
+          animation-delay: 380ms;
+        }
 
-  @keyframes scriptWrite {
-    0% {
-      width: 0;
-    }
-    100% {
-      width: 300px;
-    }
-  }
+        .intro-script div:nth-child(3) {
+          animation-delay: 760ms;
+        }
 
-  @keyframes scriptFade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+        @keyframes introLineReveal {
+          0% {
+            opacity: 0;
+            transform: translateY(18px);
+            filter: blur(6px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+        }
 
-  @keyframes penBlink {
-    0%,100% { opacity: 0; }
-    50% { opacity: 1; }
-  }
-`}</style>
+        @keyframes introScale {
+          0% {
+            transform: scale(0.96);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        .wedding-card-enter {
+          animation: weddingCardEnter 900ms ease forwards;
+        }
+
+        @keyframes weddingCardEnter {
+          0% {
+            opacity: 0.86;
+            transform: translateY(18px) scale(0.985);
+            filter: brightness(0.92);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: brightness(1);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -1712,6 +1758,20 @@ export default function WeddingInvitation() {
     >
       <IntroOverlay />
 
+      <audio id="wedding-bgm" src="/audio/music.mp3" loop />
+
+      <div
+        id="wedding-card"
+        style={{
+          maxWidth: 420,
+          margin: "0 auto",
+          background: palette.bg,
+          color: palette.ink,
+          boxShadow: "0 40px 80px -20px rgba(0,0,0,0.4)",
+          overflow: "hidden",
+        }}
+      ></div>
+
 
       <div
         style={{
@@ -1737,4 +1797,21 @@ export default function WeddingInvitation() {
     </div>
   );
 }
+
+<div
+  onClick={() => {
+    const audio = document.getElementById("wedding-bgm");
+    if (audio) {
+      audio.volume = 0.45;
+      audio.play().catch(() => {});
+    }
+  }}
+  style={{
+    minHeight: "100vh",
+    background: "#2a2622",
+    padding: "20px 0",
+    fontFamily: fontBody,
+  }}
+>
+</div>
 // <Guestbook />
