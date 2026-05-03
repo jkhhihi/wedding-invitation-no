@@ -1099,8 +1099,6 @@ function Guestbook() {
   const [name, setName] = useState("");
   const [msg, setMsg] = useState("");
   const [list, setList] = useState([
-    { name: "민지", msg: "두 분의 결혼을 진심으로 축하드려요 ♥", time: "방금 전" },
-    { name: "현우", msg: "행복하세요! 결혼식날 봬요 :)", time: "1시간 전" },
   ]);
 
   const submit = () => {
@@ -1389,10 +1387,11 @@ export default function WeddingInvitation() {
         <Gallery />
         <Venue />
         <Accounts />
-        <Guestbook />
+
         <Share />
         <Footer />
       </div>
     </div>
   );
 }
+// <Guestbook />
