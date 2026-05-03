@@ -1756,7 +1756,6 @@ function fadeInAudio(audio, targetVolume = 0.45, duration = 1800) {
 function MusicButton() {
   const [playing, setPlaying] = useState(false);
 
-  // 🔊 페이드 인 함수
   const fadeInAudio = (audio, target = 0.45, duration = 1200) => {
     audio.volume = 0;
     const steps = 20;
@@ -1771,13 +1770,33 @@ function MusicButton() {
     }, stepTime);
   };
 
-  // ▶ / ⏸ 토글
+  useEffect(() => {
+    const audio = document.getElementById("wedding-bgm");
+    if (!audio) return;
+
+    const handlePlay = () => setPlaying(true);
+    const handlePause = () => setPlaying(false);
+
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
+    audio.addEventListener("ended", handlePause);
+
+    setPlaying(!audio.paused);
+
+    return () => {
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("ended", handlePause);
+    };
+  }, []);
+
   const toggleMusic = () => {
     const audio = document.getElementById("wedding-bgm");
     if (!audio) return;
 
     if (audio.paused) {
-      audio.play()
+      audio
+        .play()
         .then(() => {
           fadeInAudio(audio, 0.45, 1200);
           setPlaying(true);
@@ -1788,31 +1807,6 @@ function MusicButton() {
       setPlaying(false);
     }
   };
-
-  // 👉 첫 클릭 시 자동 시작 (모바일 대응)
-  useEffect(() => {
-    const handleFirstTouch = () => {
-      const audio = document.getElementById("wedding-bgm");
-      if (!audio) return;
-
-      if (audio.paused) {
-        audio.play()
-          .then(() => {
-            fadeInAudio(audio, 0.45, 1200);
-            setPlaying(true);
-          })
-          .catch(() => {});
-      }
-
-      window.removeEventListener("click", handleFirstTouch);
-    };
-
-    window.addEventListener("click", handleFirstTouch);
-
-    return () => {
-      window.removeEventListener("click", handleFirstTouch);
-    };
-  }, []);
 
   return (
     <button
@@ -1837,13 +1831,11 @@ function MusicButton() {
       }}
     >
       {playing ? (
-        // ⏸ 아이콘
         <div style={{ display: "flex", gap: 4 }}>
           <div style={{ width: 4, height: 16, background: "#222" }} />
           <div style={{ width: 4, height: 16, background: "#222" }} />
         </div>
       ) : (
-        // ▶ 아이콘
         <div
           style={{
             width: 0,
