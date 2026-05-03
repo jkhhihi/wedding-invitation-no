@@ -46,7 +46,7 @@ const data = {
 
   // 결혼식 일시
   weddingDate: "2026-09-06T13:00:00+09:00",
-  weddingDateLabel: "26년 9월 6일 일요일 오후 1시",
+  weddingDateLabel: "26년 9월 6일 (일) 오후 1시",
 
   // 인사말
   greeting: {
