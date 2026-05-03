@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 
 /* =========================================================================
    📷 메인 커버 사진 (base64 임베드)
@@ -747,6 +748,44 @@ function Gallery() {
   const [idx, setIdx] = useState(null);
   const open = idx !== null;
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    startIndex: idx ?? 0,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // 라이트박스 열릴 때 클릭한 사진으로 점프
+  useEffect(() => {
+    if (open && emblaApi) {
+      emblaApi.scrollTo(idx, true);
+      setSelectedIndex(idx);
+    }
+  }, [open, emblaApi, idx]);
+
+  // 캐러셀 슬라이드 변경 감지
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    return () => emblaApi.off("select", onSelect);
+  }, [emblaApi]);
+
+  // 키보드 (← → ESC)
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setIdx(null);
+      if (e.key === "ArrowLeft") emblaApi && emblaApi.scrollPrev();
+      if (e.key === "ArrowRight") emblaApi && emblaApi.scrollNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, emblaApi]);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((i) => emblaApi && emblaApi.scrollTo(i), [emblaApi]);
+
   return (
     <section style={{ padding: "0 28px 48px" }}>
       <Reveal>
@@ -771,38 +810,145 @@ function Gallery() {
 
       {open && (
         <div
-          onClick={() => setIdx(null)}
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(20,16,12,0.92)",
+            background: "rgba(20,16,12,0.94)",
             zIndex: 50,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             padding: 20,
           }}
         >
-          <div style={{ width: "100%", maxWidth: 360 }}>
-            <PhotoPlaceholder src={data.gallery[idx]} aspect="3 / 4" />
-            <div
-              style={{
-                textAlign: "center",
-                color: "#e8dfd0",
-                fontFamily: fontBody,
-                fontSize: 11,
-                letterSpacing: "0.3em",
-                marginTop: 16,
-              }}
-            >
-              {idx + 1} / {data.gallery.length}
+          {/* 닫기 버튼 */}
+          <button
+            onClick={() => setIdx(null)}
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 16,
+              width: 40,
+              height: 40,
+              borderRadius: 999,
+              border: "none",
+              background: "rgba(255,255,255,0.1)",
+              color: "#fff",
+              fontSize: 20,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            aria-label="닫기"
+          >
+            ✕
+          </button>
+
+          {/* 캐러셀 */}
+          <div style={{ width: "100%", maxWidth: 380, position: "relative" }}>
+            <div ref={emblaRef} style={{ overflow: "hidden" }}>
+              <div style={{ display: "flex" }}>
+                {data.gallery.map((src, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      flex: "0 0 100%",
+                      minWidth: 0,
+                      paddingRight: 0,
+                    }}
+                  >
+                    <PhotoPlaceholder src={src} aspect="3 / 4" />
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* 좌우 화살표 (모바일에서는 살짝 작게) */}
+            <button
+              onClick={scrollPrev}
+              style={arrowBtn("left")}
+              aria-label="이전 사진"
+            >
+              ‹
+            </button>
+            <button
+              onClick={scrollNext}
+              style={arrowBtn("right")}
+              aria-label="다음 사진"
+            >
+              ›
+            </button>
+          </div>
+
+          {/* 인디케이터 (점) */}
+          <div
+            style={{
+              display: "flex",
+              gap: 6,
+              marginTop: 20,
+              flexWrap: "wrap",
+              justifyContent: "center",
+              maxWidth: 280,
+            }}
+          >
+            {data.gallery.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => scrollTo(i)}
+                style={{
+                  width: selectedIndex === i ? 18 : 6,
+                  height: 6,
+                  borderRadius: 999,
+                  border: "none",
+                  background: selectedIndex === i ? "#e8dfd0" : "rgba(255,255,255,0.3)",
+                  cursor: "pointer",
+                  transition: "all 200ms",
+                  padding: 0,
+                }}
+                aria-label={`${i + 1}번 사진으로 이동`}
+              />
+            ))}
+          </div>
+
+          {/* 카운터 */}
+          <div
+            style={{
+              color: "#e8dfd0",
+              fontFamily: fontBody,
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              marginTop: 12,
+            }}
+          >
+            {selectedIndex + 1} / {data.gallery.length}
           </div>
         </div>
       )}
     </section>
   );
 }
+
+const arrowBtn = (side) => ({
+  position: "absolute",
+  top: "50%",
+  [side]: 8,
+  transform: "translateY(-50%)",
+  width: 36,
+  height: 36,
+  borderRadius: 999,
+  border: "none",
+  background: "rgba(0,0,0,0.4)",
+  color: "#fff",
+  fontSize: 24,
+  lineHeight: 1,
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  paddingBottom: 4,
+});
 
 /* =========================================================================
    오시는 길
