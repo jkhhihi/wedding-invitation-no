@@ -114,7 +114,7 @@ const data = {
         lines: [
           "화환은 반입이 불가하여 정중히 사양합니다",
           "따뜻한 마음만 감사히 받겠습니다",
-          "전용주차장이 없으니 가급적 대중교통을 이용해주시기 바랍니다.",
+          "전용주차장이 없으니 가급적 대중교통을 이용해주시기 바랍니다",
         ],
       },
     ],
@@ -1745,7 +1745,7 @@ export default function WeddingInvitation() {
       style={{
         minHeight: "100vh",
         background: "#2a2622",
-        padding: "20px 0",
+        padding: "0",
         fontFamily: fontBody,
       }}
     >
@@ -1789,20 +1789,5 @@ export default function WeddingInvitation() {
   );
 }
 
-<div
-  onClick={() => {
-    const audio = document.getElementById("wedding-bgm");
-    if (audio) {
-      audio.volume = 0.45;
-      audio.play().catch(() => {});
-    }
-  }}
-  style={{
-    minHeight: "100vh",
-    background: "#2a2622",
-    padding: "20px 0",
-    fontFamily: fontBody,
-  }}
->
-</div>
+
 // <Guestbook />
