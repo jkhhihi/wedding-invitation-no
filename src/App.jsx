@@ -19,7 +19,7 @@ const GALLERY_4 = "/images/4.jpg"
 const GALLERY_5 = "/images/5.jpg"
 const GALLERY_6 = "/images/6.jpg"
 const GALLERY_7 = "/images/7.jpg"
-const GALLERY_8 = "/images/8.jpg"
+const GALLERY_8 = "/images/10.jpg"
 
 const GALLERY_PHOTOS = [
   GALLERY_0, GALLERY_1, GALLERY_2,
@@ -38,7 +38,7 @@ const MAP_IMAGE = "/images/map.jpg";
 const data = {
   // 메인 커버
   cover: {
-    dateLine: "2026. 09. 06. SUN PM 01:00",
+    dateLine: "2026년 09월 06일 (일) 오후 1시",
     venueLine: "남산골한옥마을 (관훈동 민씨 가옥)",
     groomFirst: "기훈",
     brideFirst: "연지",
@@ -100,7 +100,6 @@ const data = {
           "남산한옥마을 공영주차장",
           "동국대학교 충무로 영상센터 주차장",
           "대한극장 주차장",
-          "전용 주차장이 없으니 가급적 대중교통을 이용해 주세요",
         ],
       },
       {
@@ -115,6 +114,7 @@ const data = {
         lines: [
           "화환은 반입이 불가하여 정중히 사양합니다",
           "따뜻한 마음만 감사히 받겠습니다",
+          "전용주차장이 없으니 가급적 대중교통을 이용해주시기 바랍니다.",
         ],
       },
     ],
@@ -330,41 +330,26 @@ function Cover() {
     <section
       style={{
         position: "relative",
-        padding: "56px 24px 72px",
+        padding: "0",
         textAlign: "center",
         overflow: "hidden",
       }}
     >
       {/* 상단 장식 */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-        <Botanical size={56} />
-      </div>
 
-      <div
-        style={{
-          fontFamily: fontBody,
-          fontSize: 11,
-          letterSpacing: "0.5em",
-          color: palette.accent,
-          marginBottom: 28,
-        }}
-      >
-        WEDDING INVITATION
-      </div>
+
 
       {/* 메인 사진 */}
       <div
-        style={{
-          margin: "0 auto 36px",
-          maxWidth: 280,
-          border: `1px solid ${palette.rule}`,
-          padding: 8,
-          background: palette.paper,
-          boxShadow: "0 30px 60px -30px rgba(60,40,20,0.25)",
-        }}
-      >
-        <PhotoPlaceholder aspect="3 / 4" src={data.cover.photo} />
-      </div>
+  style={{
+    width: "100%",
+    height: "80vh",
+    backgroundImage: `url(${data.cover.photo})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    marginBottom: 40,
+  }}
+/>
 
       {/* 이름 */}
       <div
@@ -378,7 +363,7 @@ function Cover() {
       >
         {data.cover.groomFirst}
         <span style={{ color: palette.accent, margin: "0 14px", fontSize: 22 }}>
-          &
+          ♥
         </span>
         {data.cover.brideFirst}
       </div>
@@ -679,6 +664,7 @@ const iconBtn = {
   textDecoration: "none",
 };
 
+/*
 function People() {
   return (
     <section style={{ padding: "0 28px 48px" }}>
@@ -700,6 +686,7 @@ function People() {
     </section>
   );
 }
+  */
 
 const subhead = {
   fontFamily: fontBody,
@@ -1734,122 +1721,7 @@ audio.play()
   );
 }
 
-function fadeInAudio(audio, targetVolume = 0.45, duration = 1800) {
-  if (!audio) return;
 
-  audio.volume = 0;
-  const steps = 30;
-  const stepTime = duration / steps;
-  const volumeStep = targetVolume / steps;
-  let currentStep = 0;
-
-  const timer = setInterval(() => {
-    currentStep += 1;
-    audio.volume = Math.min(targetVolume, volumeStep * currentStep);
-
-    if (currentStep >= steps) {
-      clearInterval(timer);
-    }
-  }, stepTime);
-}
-
-function MusicButton() {
-  const [playing, setPlaying] = useState(false);
-
-  const fadeInAudio = (audio, target = 0.45, duration = 1200) => {
-    audio.volume = 0;
-    const steps = 20;
-    const stepTime = duration / steps;
-    const stepVolume = target / steps;
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current++;
-      audio.volume = Math.min(target, stepVolume * current);
-      if (current >= steps) clearInterval(timer);
-    }, stepTime);
-  };
-
-  useEffect(() => {
-    const audio = document.getElementById("wedding-bgm");
-    if (!audio) return;
-
-    const handlePlay = () => setPlaying(true);
-    const handlePause = () => setPlaying(false);
-
-    audio.addEventListener("play", handlePlay);
-    audio.addEventListener("pause", handlePause);
-    audio.addEventListener("ended", handlePause);
-
-    setPlaying(!audio.paused);
-
-    return () => {
-      audio.removeEventListener("play", handlePlay);
-      audio.removeEventListener("pause", handlePause);
-      audio.removeEventListener("ended", handlePause);
-    };
-  }, []);
-
-  const toggleMusic = () => {
-    const audio = document.getElementById("wedding-bgm");
-    if (!audio) return;
-
-    if (audio.paused) {
-      audio
-        .play()
-        .then(() => {
-          fadeInAudio(audio, 0.45, 1200);
-          setPlaying(true);
-        })
-        .catch(() => {});
-    } else {
-      audio.pause();
-      setPlaying(false);
-    }
-  };
-
-  return (
-    <button
-      onClick={toggleMusic}
-      style={{
-        position: "fixed",
-        top: 26,
-        right: "calc(50% - 190px)",
-        zIndex: 9998,
-        width: 48,
-        height: 48,
-        borderRadius: "50%",
-        border: "1px solid rgba(0,0,0,0.08)",
-        background: "rgba(255,255,255,0.92)",
-        color: "#222",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
-        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-        backdropFilter: "blur(6px)",
-      }}
-    >
-      {playing ? (
-        <div style={{ display: "flex", gap: 4 }}>
-          <div style={{ width: 4, height: 16, background: "#222" }} />
-          <div style={{ width: 4, height: 16, background: "#222" }} />
-        </div>
-      ) : (
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "12px solid #222",
-            borderTop: "8px solid transparent",
-            borderBottom: "8px solid transparent",
-            marginLeft: 3,
-          }}
-        />
-      )}
-    </button>
-  );
-}
 
 
 /* =========================================================================
@@ -1879,9 +1751,6 @@ export default function WeddingInvitation() {
     >
       <IntroOverlay />
 
-      <audio id="wedding-bgm" src="/audio/music.mp3" loop />
-      <MusicButton />
-
       <div
         id="wedding-card"
         style={{
@@ -1907,7 +1776,7 @@ export default function WeddingInvitation() {
       >
         <Cover />
         <Greeting />
-        <People />
+        {/* <People /> */}
         <CalendarView />
         <Gallery />
         <Venue />
