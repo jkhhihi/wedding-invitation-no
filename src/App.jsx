@@ -19,7 +19,7 @@ const GALLERY_4 = "/images/4.jpg"
 const GALLERY_5 = "/images/5.jpg"
 const GALLERY_6 = "/images/6.jpg"
 const GALLERY_7 = "/images/7.jpg"
-const GALLERY_8 = "/images/10.jpg"
+const GALLERY_8 = "/images/8.jpg"
 
 const GALLERY_PHOTOS = [
   GALLERY_0, GALLERY_1, GALLERY_2,
@@ -1261,9 +1261,7 @@ function Accounts() {
             marginBottom: 24,
           }}
         >
-          참석이 어려운 분들을 위해
-          <br />
-          계좌번호를 안내드립니다.
+        
         </div>
 
         <div
