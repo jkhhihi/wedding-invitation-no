@@ -38,8 +38,8 @@ const MAP_IMAGE = "/images/map.jpg";
 const data = {
   // 메인 커버
   cover: {
-    dateLine: "2026년 09월 06일 (일) 오후 1시",
-    venueLine: "남산골한옥마을 (관훈동 민씨 가옥)",
+    dateLine: "2026년 09월 06일 (일)",
+    //venueLine: "남산골한옥마을 (관훈동 민씨 가옥)",
     groomFirst: "기훈",
     brideFirst: "연지",
     photo: COVER_PHOTO,
@@ -47,11 +47,11 @@ const data = {
 
   // 결혼식 일시
   weddingDate: "2026-09-06T13:00:00+09:00",
-  weddingDateLabel: "26년 9월 6일 (일) 오후 1시",
+  weddingDateLabel: "26년 9월 6일 (일)",
 
   // 인사말
   greeting: {
-    title: "초대합니다",
+    title: "결혼합니다",
     body: [
       "기쁘나 슬프나 두 사람이 서로의 손을 맞잡고,",
       "훈훈한 사랑으로 앞으로의 날들을 채워가려 합니다.",
@@ -1777,7 +1777,7 @@ export default function WeddingInvitation() {
         {/* <People /> */}
         <CalendarView />
         <Gallery />
-        <Venue />
+        
         <Accounts />
 
         <Share />
