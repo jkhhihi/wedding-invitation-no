@@ -38,7 +38,7 @@ const MAP_IMAGE = "/images/map.jpg";
 const data = {
   // 메인 커버
   cover: {
-    dateLine: "2026년 09월 06일 (일)",
+    //dateLine: "2026년 09월 06일 (일)",
     //venueLine: "남산골한옥마을 (관훈동 민씨 가옥)",
     groomFirst: "기훈",
     brideFirst: "연지",
